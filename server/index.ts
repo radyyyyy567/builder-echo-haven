@@ -28,6 +28,26 @@ import {
   getRecentActivity
 } from "./routes/dashboard";
 
+import {
+  getEvents,
+  getEventById,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  addEventToGroup,
+  removeEventFromGroup
+} from "./routes/events";
+
+import {
+  getSurveys,
+  getSurveyById,
+  createSurvey,
+  updateSurvey,
+  deleteSurvey,
+  addSurveyToEvent,
+  removeSurveyFromEvent
+} from "./routes/surveys";
+
 export function createServer() {
   const app = express();
 
