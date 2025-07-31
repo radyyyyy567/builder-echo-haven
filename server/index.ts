@@ -2,6 +2,31 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { testConnection, createTables, seedDatabase } from "./db/schema";
+
+// Import route handlers
+import {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  addUserToGroup,
+  removeUserFromGroup
+} from "./routes/users";
+
+import {
+  getGroups,
+  getGroupById,
+  createGroup,
+  updateGroup,
+  deleteGroup
+} from "./routes/groups";
+
+import {
+  getDashboardStats,
+  getRecentActivity
+} from "./routes/dashboard";
 
 export function createServer() {
   const app = express();
@@ -11,7 +36,7 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Example API routes
+  // Health check routes
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
@@ -19,5 +44,51 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Dashboard routes
+  app.get("/api/dashboard/stats", getDashboardStats);
+  app.get("/api/dashboard/activity", getRecentActivity);
+
+  // Users routes
+  app.get("/api/users", getUsers);
+  app.get("/api/users/:id", getUserById);
+  app.post("/api/users", createUser);
+  app.put("/api/users/:id", updateUser);
+  app.delete("/api/users/:id", deleteUser);
+  app.post("/api/users/group", addUserToGroup);
+  app.delete("/api/users/group", removeUserFromGroup);
+
+  // Groups routes
+  app.get("/api/groups", getGroups);
+  app.get("/api/groups/:id", getGroupById);
+  app.post("/api/groups", createGroup);
+  app.put("/api/groups/:id", updateGroup);
+  app.delete("/api/groups/:id", deleteGroup);
+
+  // Initialize database
+  initializeDatabase().catch(console.error);
+
   return app;
+}
+
+async function initializeDatabase() {
+  console.log('🔄 Initializing database...');
+  
+  // Test connection
+  const connected = await testConnection();
+  if (!connected) {
+    console.error('❌ Database connection failed. Please check your connection settings.');
+    return;
+  }
+
+  try {
+    // Create tables
+    await createTables();
+    
+    // Seed with initial data
+    await seedDatabase();
+    
+    console.log('✅ Database initialization completed successfully');
+  } catch (error) {
+    console.error('❌ Database initialization failed:', error);
+  }
 }
