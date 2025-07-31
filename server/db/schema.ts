@@ -37,9 +37,9 @@ export async function createTables() {
       CREATE TABLE IF NOT EXISTS events (
         uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name VARCHAR(30) NOT NULL,
-        description LONGTEXT,
-        time_start DATETIME NOT NULL,
-        time_end DATETIME NOT NULL,
+        description TEXT,
+        time_start TIMESTAMP NOT NULL,
+        time_end TIMESTAMP NOT NULL,
         status VARCHAR(20) NOT NULL DEFAULT 'scheduled',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -52,7 +52,7 @@ export async function createTables() {
         uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name VARCHAR(30) NOT NULL,
         form JSONB NOT NULL,
-        set_point LONGTEXT,
+        set_point TEXT,
         status VARCHAR(20) NOT NULL DEFAULT 'active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
