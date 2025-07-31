@@ -102,6 +102,22 @@ export default function Users() {
     }
   };
 
+  // Edit user
+  const editUser = (user: UserWithGroups) => {
+    // Convert UserWithGroups to User for the form
+    const userForEdit: User = {
+      uuid: user.uuid,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+    setEditingUser(userForEdit);
+    setShowUserForm(true);
+  };
+
   // Delete user
   const deleteUser = async (userId: string) => {
     try {
