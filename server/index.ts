@@ -84,6 +84,24 @@ export function createServer() {
   app.put("/api/groups/:id", updateGroup);
   app.delete("/api/groups/:id", deleteGroup);
 
+  // Events routes
+  app.get("/api/events", getEvents);
+  app.get("/api/events/:id", getEventById);
+  app.post("/api/events", createEvent);
+  app.put("/api/events/:id", updateEvent);
+  app.delete("/api/events/:id", deleteEvent);
+  app.post("/api/events/group", addEventToGroup);
+  app.delete("/api/events/group", removeEventFromGroup);
+
+  // Surveys routes
+  app.get("/api/surveys", getSurveys);
+  app.get("/api/surveys/:id", getSurveyById);
+  app.post("/api/surveys", createSurvey);
+  app.put("/api/surveys/:id", updateSurvey);
+  app.delete("/api/surveys/:id", deleteSurvey);
+  app.post("/api/surveys/event", addSurveyToEvent);
+  app.delete("/api/surveys/event", removeSurveyFromEvent);
+
   // Initialize database
   initializeDatabase().catch(console.error);
 
