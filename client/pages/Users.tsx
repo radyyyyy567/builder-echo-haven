@@ -60,6 +60,8 @@ export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const { toast } = useToast();
 
   // Fetch users from API
