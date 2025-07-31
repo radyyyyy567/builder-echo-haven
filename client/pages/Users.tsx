@@ -28,7 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { UserWithGroups, PaginatedResponse, ApiResponse } from "@shared/api";
+import { UserWithGroups, PaginatedResponse, ApiResponse, User } from "@shared/api";
+import { UserForm } from "@/components/forms/UserForm";
 
 function getUserInitials(username: string): string {
   return username
