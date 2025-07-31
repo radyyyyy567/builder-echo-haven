@@ -1,12 +1,12 @@
 import { RequestHandler } from "express";
 import pool from "../db/connection";
-import { 
-  Event, 
-  EventWithGroups, 
-  CreateEventRequest, 
-  UpdateEventRequest, 
-  ApiResponse, 
-  PaginatedResponse 
+import {
+  Event,
+  EventWithGroups,
+  CreateEventRequest,
+  UpdateEventRequest,
+  ApiResponse,
+  PaginatedResponse,
 } from "@shared/api";
 
 // Get all events with optional filtering and pagination
@@ -15,7 +15,7 @@ export const getEvents: RequestHandler = async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = (page - 1) * limit;
-    const search = req.query.search as string || '';
+    const search = (req.query.search as string) || "";
     const status = req.query.status as string;
 
     let query = `
@@ -45,7 +45,7 @@ export const getEvents: RequestHandler = async (req, res) => {
       params.push(`%${search}%`);
     }
 
-    if (status && status !== 'all') {
+    if (status && status !== "all") {
       paramCount++;
       query += ` AND e.status = $${paramCount}`;
       params.push(status);
@@ -69,15 +69,18 @@ export const getEvents: RequestHandler = async (req, res) => {
       countParams.push(`%${search}%`);
     }
 
-    if (status && status !== 'all') {
+    if (status && status !== "all") {
       countParamCount++;
       countQuery += ` AND e.status = $${countParamCount}`;
       countParams.push(status);
     }
 
     const [eventsResult, countResult] = await Promise.all([
-      pool.query(query + ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`, [...params, limit, offset]),
-      pool.query(countQuery, countParams)
+      pool.query(
+        query + ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`,
+        [...params, limit, offset],
+      ),
+      pool.query(countQuery, countParams),
     ]);
 
     const total = parseInt(countResult.rows[0].total);
@@ -90,16 +93,16 @@ export const getEvents: RequestHandler = async (req, res) => {
         page,
         limit,
         total,
-        totalPages
-      }
+        totalPages,
+      },
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching events:', error);
+    console.error("Error fetching events:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch events'
+      error: "Failed to fetch events",
     };
     res.status(500).json(response);
   }
@@ -134,22 +137,22 @@ export const getEventById: RequestHandler = async (req, res) => {
     if (result.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Event not found'
+        error: "Event not found",
       };
       return res.status(404).json(response);
     }
 
     const response: ApiResponse<EventWithGroups> = {
       success: true,
-      data: result.rows[0]
+      data: result.rows[0],
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching event:', error);
+    console.error("Error fetching event:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch event'
+      error: "Failed to fetch event",
     };
     res.status(500).json(response);
   }
@@ -158,13 +161,19 @@ export const getEventById: RequestHandler = async (req, res) => {
 // Create new event
 export const createEvent: RequestHandler = async (req, res) => {
   try {
-    const { name, description, time_start, time_end, status }: CreateEventRequest = req.body;
+    const {
+      name,
+      description,
+      time_start,
+      time_end,
+      status,
+    }: CreateEventRequest = req.body;
 
     // Basic validation
     if (!name || !time_start || !time_end) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Name, start time, and end time are required'
+        error: "Name, start time, and end time are required",
       };
       return res.status(400).json(response);
     }
@@ -173,7 +182,7 @@ export const createEvent: RequestHandler = async (req, res) => {
     if (new Date(time_end) <= new Date(time_start)) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'End time must be after start time'
+        error: "End time must be after start time",
       };
       return res.status(400).json(response);
     }
@@ -185,26 +194,26 @@ export const createEvent: RequestHandler = async (req, res) => {
     `;
 
     const result = await pool.query(query, [
-      name, 
-      description || null, 
-      time_start, 
-      time_end, 
-      status || 'scheduled'
+      name,
+      description || null,
+      time_start,
+      time_end,
+      status || "scheduled",
     ]);
 
     const response: ApiResponse<Event> = {
       success: true,
       data: result.rows[0],
-      message: 'Event created successfully'
+      message: "Event created successfully",
     };
 
     res.status(201).json(response);
   } catch (error: any) {
-    console.error('Error creating event:', error);
-    
+    console.error("Error creating event:", error);
+
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to create event'
+      error: "Failed to create event",
     };
     res.status(400).json(response);
   }
@@ -221,7 +230,7 @@ export const updateEvent: RequestHandler = async (req, res) => {
       if (new Date(updates.time_end) <= new Date(updates.time_start)) {
         const response: ApiResponse<null> = {
           success: false,
-          error: 'End time must be after start time'
+          error: "End time must be after start time",
         };
         return res.status(400).json(response);
       }
@@ -243,7 +252,7 @@ export const updateEvent: RequestHandler = async (req, res) => {
     if (updateFields.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'No fields to update'
+        error: "No fields to update",
       };
       return res.status(400).json(response);
     }
@@ -251,7 +260,7 @@ export const updateEvent: RequestHandler = async (req, res) => {
     values.push(id); // Add ID as last parameter
     const query = `
       UPDATE events 
-      SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+      SET ${updateFields.join(", ")}, updated_at = CURRENT_TIMESTAMP
       WHERE uuid = $${paramCount + 1}
       RETURNING uuid, name, description, time_start, time_end, status, created_at, updated_at
     `;
@@ -261,7 +270,7 @@ export const updateEvent: RequestHandler = async (req, res) => {
     if (result.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Event not found'
+        error: "Event not found",
       };
       return res.status(404).json(response);
     }
@@ -269,16 +278,16 @@ export const updateEvent: RequestHandler = async (req, res) => {
     const response: ApiResponse<Event> = {
       success: true,
       data: result.rows[0],
-      message: 'Event updated successfully'
+      message: "Event updated successfully",
     };
 
     res.json(response);
   } catch (error: any) {
-    console.error('Error updating event:', error);
-    
+    console.error("Error updating event:", error);
+
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to update event'
+      error: "Failed to update event",
     };
     res.status(400).json(response);
   }
@@ -290,30 +299,33 @@ export const deleteEvent: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     // First check if event exists
-    const checkResult = await pool.query('SELECT uuid FROM events WHERE uuid = $1', [id]);
-    
+    const checkResult = await pool.query(
+      "SELECT uuid FROM events WHERE uuid = $1",
+      [id],
+    );
+
     if (checkResult.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Event not found'
+        error: "Event not found",
       };
       return res.status(404).json(response);
     }
 
     // Delete event (cascading will handle relationships)
-    await pool.query('DELETE FROM events WHERE uuid = $1', [id]);
+    await pool.query("DELETE FROM events WHERE uuid = $1", [id]);
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Event deleted successfully'
+      message: "Event deleted successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error deleting event:', error);
+    console.error("Error deleting event:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to delete event'
+      error: "Failed to delete event",
     };
     res.status(500).json(response);
   }
@@ -327,7 +339,7 @@ export const addEventToGroup: RequestHandler = async (req, res) => {
     if (!eventId || !groupId) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Event ID and Group ID are required'
+        error: "Event ID and Group ID are required",
       };
       return res.status(400).json(response);
     }
@@ -342,15 +354,15 @@ export const addEventToGroup: RequestHandler = async (req, res) => {
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Event added to group successfully'
+      message: "Event added to group successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error adding event to group:', error);
+    console.error("Error adding event to group:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to add event to group'
+      error: "Failed to add event to group",
     };
     res.status(500).json(response);
   }
@@ -364,7 +376,7 @@ export const removeEventFromGroup: RequestHandler = async (req, res) => {
     if (!eventId || !groupId) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Event ID and Group ID are required'
+        error: "Event ID and Group ID are required",
       };
       return res.status(400).json(response);
     }
@@ -378,15 +390,15 @@ export const removeEventFromGroup: RequestHandler = async (req, res) => {
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Event removed from group successfully'
+      message: "Event removed from group successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error removing event from group:', error);
+    console.error("Error removing event from group:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to remove event from group'
+      error: "Failed to remove event from group",
     };
     res.status(500).json(response);
   }

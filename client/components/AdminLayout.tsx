@@ -36,9 +36,7 @@ interface AdminLayoutProps {
 const navigation = [
   {
     title: "Overview",
-    items: [
-      { title: "Dashboard", url: "/", icon: BarChart3 },
-    ],
+    items: [{ title: "Dashboard", url: "/", icon: BarChart3 }],
   },
   {
     title: "Management",
@@ -126,14 +124,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+            <Badge
+              variant="secondary"
+              className="bg-primary/10 text-primary border-primary/20"
+            >
               Admin Panel
             </Badge>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {children}
-        </div>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

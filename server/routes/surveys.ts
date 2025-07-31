@@ -1,12 +1,12 @@
 import { RequestHandler } from "express";
 import pool from "../db/connection";
-import { 
-  Survey, 
-  SurveyWithEvents, 
-  CreateSurveyRequest, 
-  UpdateSurveyRequest, 
-  ApiResponse, 
-  PaginatedResponse 
+import {
+  Survey,
+  SurveyWithEvents,
+  CreateSurveyRequest,
+  UpdateSurveyRequest,
+  ApiResponse,
+  PaginatedResponse,
 } from "@shared/api";
 
 // Get all surveys with optional filtering and pagination
@@ -15,7 +15,7 @@ export const getSurveys: RequestHandler = async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = (page - 1) * limit;
-    const search = req.query.search as string || '';
+    const search = (req.query.search as string) || "";
     const status = req.query.status as string;
 
     let query = `
@@ -48,7 +48,7 @@ export const getSurveys: RequestHandler = async (req, res) => {
       params.push(`%${search}%`);
     }
 
-    if (status && status !== 'all') {
+    if (status && status !== "all") {
       paramCount++;
       query += ` AND s.status = $${paramCount}`;
       params.push(status);
@@ -72,15 +72,18 @@ export const getSurveys: RequestHandler = async (req, res) => {
       countParams.push(`%${search}%`);
     }
 
-    if (status && status !== 'all') {
+    if (status && status !== "all") {
       countParamCount++;
       countQuery += ` AND s.status = $${countParamCount}`;
       countParams.push(status);
     }
 
     const [surveysResult, countResult] = await Promise.all([
-      pool.query(query + ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`, [...params, limit, offset]),
-      pool.query(countQuery, countParams)
+      pool.query(
+        query + ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`,
+        [...params, limit, offset],
+      ),
+      pool.query(countQuery, countParams),
     ]);
 
     const total = parseInt(countResult.rows[0].total);
@@ -93,16 +96,16 @@ export const getSurveys: RequestHandler = async (req, res) => {
         page,
         limit,
         total,
-        totalPages
-      }
+        totalPages,
+      },
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching surveys:', error);
+    console.error("Error fetching surveys:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch surveys'
+      error: "Failed to fetch surveys",
     };
     res.status(500).json(response);
   }
@@ -140,22 +143,22 @@ export const getSurveyById: RequestHandler = async (req, res) => {
     if (result.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Survey not found'
+        error: "Survey not found",
       };
       return res.status(404).json(response);
     }
 
     const response: ApiResponse<SurveyWithEvents> = {
       success: true,
-      data: result.rows[0]
+      data: result.rows[0],
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching survey:', error);
+    console.error("Error fetching survey:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch survey'
+      error: "Failed to fetch survey",
     };
     res.status(500).json(response);
   }
@@ -170,16 +173,16 @@ export const createSurvey: RequestHandler = async (req, res) => {
     if (!name || !form) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Name and form are required'
+        error: "Name and form are required",
       };
       return res.status(400).json(response);
     }
 
     // Validate form is valid JSON
-    if (typeof form !== 'object') {
+    if (typeof form !== "object") {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Form must be a valid JSON object'
+        error: "Form must be a valid JSON object",
       };
       return res.status(400).json(response);
     }
@@ -191,25 +194,25 @@ export const createSurvey: RequestHandler = async (req, res) => {
     `;
 
     const result = await pool.query(query, [
-      name, 
-      JSON.stringify(form), 
-      set_point || null, 
-      status || 'active'
+      name,
+      JSON.stringify(form),
+      set_point || null,
+      status || "active",
     ]);
 
     const response: ApiResponse<Survey> = {
       success: true,
       data: result.rows[0],
-      message: 'Survey created successfully'
+      message: "Survey created successfully",
     };
 
     res.status(201).json(response);
   } catch (error: any) {
-    console.error('Error creating survey:', error);
-    
+    console.error("Error creating survey:", error);
+
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to create survey'
+      error: "Failed to create survey",
     };
     res.status(400).json(response);
   }
@@ -222,10 +225,10 @@ export const updateSurvey: RequestHandler = async (req, res) => {
     const updates: UpdateSurveyRequest = req.body;
 
     // Validate form if provided
-    if (updates.form && typeof updates.form !== 'object') {
+    if (updates.form && typeof updates.form !== "object") {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Form must be a valid JSON object'
+        error: "Form must be a valid JSON object",
       };
       return res.status(400).json(response);
     }
@@ -238,7 +241,7 @@ export const updateSurvey: RequestHandler = async (req, res) => {
     Object.entries(updates).forEach(([key, value]) => {
       if (value !== undefined) {
         paramCount++;
-        if (key === 'form') {
+        if (key === "form") {
           updateFields.push(`${key} = $${paramCount}`);
           values.push(JSON.stringify(value));
         } else {
@@ -251,7 +254,7 @@ export const updateSurvey: RequestHandler = async (req, res) => {
     if (updateFields.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'No fields to update'
+        error: "No fields to update",
       };
       return res.status(400).json(response);
     }
@@ -259,7 +262,7 @@ export const updateSurvey: RequestHandler = async (req, res) => {
     values.push(id); // Add ID as last parameter
     const query = `
       UPDATE surveys 
-      SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+      SET ${updateFields.join(", ")}, updated_at = CURRENT_TIMESTAMP
       WHERE uuid = $${paramCount + 1}
       RETURNING uuid, name, form, set_point, status, created_at, updated_at
     `;
@@ -269,7 +272,7 @@ export const updateSurvey: RequestHandler = async (req, res) => {
     if (result.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Survey not found'
+        error: "Survey not found",
       };
       return res.status(404).json(response);
     }
@@ -277,16 +280,16 @@ export const updateSurvey: RequestHandler = async (req, res) => {
     const response: ApiResponse<Survey> = {
       success: true,
       data: result.rows[0],
-      message: 'Survey updated successfully'
+      message: "Survey updated successfully",
     };
 
     res.json(response);
   } catch (error: any) {
-    console.error('Error updating survey:', error);
-    
+    console.error("Error updating survey:", error);
+
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to update survey'
+      error: "Failed to update survey",
     };
     res.status(400).json(response);
   }
@@ -298,30 +301,33 @@ export const deleteSurvey: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     // First check if survey exists
-    const checkResult = await pool.query('SELECT uuid FROM surveys WHERE uuid = $1', [id]);
-    
+    const checkResult = await pool.query(
+      "SELECT uuid FROM surveys WHERE uuid = $1",
+      [id],
+    );
+
     if (checkResult.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Survey not found'
+        error: "Survey not found",
       };
       return res.status(404).json(response);
     }
 
     // Delete survey (cascading will handle relationships)
-    await pool.query('DELETE FROM surveys WHERE uuid = $1', [id]);
+    await pool.query("DELETE FROM surveys WHERE uuid = $1", [id]);
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Survey deleted successfully'
+      message: "Survey deleted successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error deleting survey:', error);
+    console.error("Error deleting survey:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to delete survey'
+      error: "Failed to delete survey",
     };
     res.status(500).json(response);
   }
@@ -335,7 +341,7 @@ export const addSurveyToEvent: RequestHandler = async (req, res) => {
     if (!surveyId || !eventId) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Survey ID and Event ID are required'
+        error: "Survey ID and Event ID are required",
       };
       return res.status(400).json(response);
     }
@@ -350,15 +356,15 @@ export const addSurveyToEvent: RequestHandler = async (req, res) => {
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Survey added to event successfully'
+      message: "Survey added to event successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error adding survey to event:', error);
+    console.error("Error adding survey to event:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to add survey to event'
+      error: "Failed to add survey to event",
     };
     res.status(500).json(response);
   }
@@ -372,7 +378,7 @@ export const removeSurveyFromEvent: RequestHandler = async (req, res) => {
     if (!surveyId || !eventId) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Survey ID and Event ID are required'
+        error: "Survey ID and Event ID are required",
       };
       return res.status(400).json(response);
     }
@@ -386,15 +392,15 @@ export const removeSurveyFromEvent: RequestHandler = async (req, res) => {
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Survey removed from event successfully'
+      message: "Survey removed from event successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error removing survey from event:', error);
+    console.error("Error removing survey from event:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to remove survey from event'
+      error: "Failed to remove survey from event",
     };
     res.status(500).json(response);
   }

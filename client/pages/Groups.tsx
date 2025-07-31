@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Edit, Trash2, MoreHorizontal, Users2, User } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  Users2,
+  User,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +28,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { GroupWithUsers, PaginatedResponse, ApiResponse, Group } from "@shared/api";
+import {
+  GroupWithUsers,
+  PaginatedResponse,
+  ApiResponse,
+  Group,
+} from "@shared/api";
 import { GroupForm } from "@/components/forms/GroupForm";
 
 function formatDate(dateString: string): string {
@@ -138,10 +151,12 @@ export default function Groups() {
             Manage user groups and their relationships.
           </p>
         </div>
-        <Button onClick={() => {
-          setEditingGroup(null);
-          setShowGroupForm(true);
-        }}>
+        <Button
+          onClick={() => {
+            setEditingGroup(null);
+            setShowGroupForm(true);
+          }}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Group
         </Button>
@@ -169,9 +184,7 @@ export default function Groups() {
       {/* Groups Table */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Groups ({total})
-          </CardTitle>
+          <CardTitle>Groups ({total})</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -210,13 +223,21 @@ export default function Groups() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">{group.users.length}</span>
-                          <span className="text-sm text-muted-foreground">members</span>
+                          <span className="text-sm font-medium">
+                            {group.users.length}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            members
+                          </span>
                         </div>
                         {group.users.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {group.users.slice(0, 3).map((user) => (
-                              <Badge key={user.uuid} variant="outline" className="text-xs">
+                              <Badge
+                                key={user.uuid}
+                                variant="outline"
+                                className="text-xs"
+                              >
                                 {user.username}
                               </Badge>
                             ))}
@@ -243,7 +264,7 @@ export default function Groups() {
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => deleteGroup(group.uuid)}
                             >
@@ -268,7 +289,9 @@ export default function Groups() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       Previous
@@ -276,7 +299,9 @@ export default function Groups() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next

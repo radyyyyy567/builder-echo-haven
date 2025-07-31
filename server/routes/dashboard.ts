@@ -31,15 +31,15 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 
     const response: ApiResponse<DashboardStats> = {
       success: true,
-      data: dashboardStats
+      data: dashboardStats,
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
+    console.error("Error fetching dashboard stats:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch dashboard statistics'
+      error: "Failed to fetch dashboard statistics",
     };
     res.status(500).json(response);
   }
@@ -88,39 +88,40 @@ export const getRecentActivity: RequestHandler = async (req, res) => {
 
     const [usersResult, groupsResult] = await Promise.all([
       pool.query(usersQuery, [Math.ceil(limit / 2)]),
-      pool.query(groupsQuery, [Math.ceil(limit / 2)])
+      pool.query(groupsQuery, [Math.ceil(limit / 2)]),
     ]);
 
     // Combine and sort activities
     const activities: RecentActivity[] = [
-      ...usersResult.rows.map(row => ({
-        type: row.type as 'user',
+      ...usersResult.rows.map((row) => ({
+        type: row.type as "user",
         action: row.action,
         details: row.details,
         time: row.time,
-        status: 'success' as const
+        status: "success" as const,
       })),
-      ...groupsResult.rows.map(row => ({
-        type: row.type as 'group',
+      ...groupsResult.rows.map((row) => ({
+        type: row.type as "group",
         action: row.action,
         details: row.details,
         time: row.time,
-        status: 'info' as const
-      }))
-    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-     .slice(0, limit);
+        status: "info" as const,
+      })),
+    ]
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, limit);
 
     const response: ApiResponse<RecentActivity[]> = {
       success: true,
-      data: activities
+      data: activities,
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching recent activity:', error);
+    console.error("Error fetching recent activity:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch recent activity'
+      error: "Failed to fetch recent activity",
     };
     res.status(500).json(response);
   }

@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Edit, Trash2, MoreHorizontal, Filter, Calendar, Clock } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  Filter,
+  Calendar,
+  Clock,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +36,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { EventWithGroups, PaginatedResponse, ApiResponse, Event } from "@shared/api";
+import {
+  EventWithGroups,
+  PaginatedResponse,
+  ApiResponse,
+  Event,
+} from "@shared/api";
 import { EventForm } from "@/components/forms/EventForm";
 
 function getStatusBadgeColor(status: string) {
@@ -169,10 +183,12 @@ export default function Events() {
             Schedule and manage events with groups and surveys.
           </p>
         </div>
-        <Button onClick={() => {
-          setEditingEvent(null);
-          setShowEventForm(true);
-        }}>
+        <Button
+          onClick={() => {
+            setEditingEvent(null);
+            setShowEventForm(true);
+          }}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Event
         </Button>
@@ -215,9 +231,7 @@ export default function Events() {
       {/* Events Table */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Events ({total})
-          </CardTitle>
+          <CardTitle>Events ({total})</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -268,13 +282,18 @@ export default function Events() {
                       </TableCell>
                       <TableCell>
                         <Badge className={getStatusBadgeColor(event.status)}>
-                          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                          {event.status.charAt(0).toUpperCase() +
+                            event.status.slice(1)}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {event.groups.slice(0, 2).map((group) => (
-                            <Badge key={group.uuid} variant="outline" className="text-xs">
+                            <Badge
+                              key={group.uuid}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {group.name}
                             </Badge>
                           ))}
@@ -284,7 +303,9 @@ export default function Events() {
                             </Badge>
                           )}
                           {event.groups.length === 0 && (
-                            <span className="text-xs text-muted-foreground">No groups</span>
+                            <span className="text-xs text-muted-foreground">
+                              No groups
+                            </span>
                           )}
                         </div>
                       </TableCell>
@@ -303,7 +324,7 @@ export default function Events() {
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => deleteEvent(event.uuid)}
                             >
@@ -328,7 +349,9 @@ export default function Events() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       Previous
@@ -336,7 +359,9 @@ export default function Events() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next

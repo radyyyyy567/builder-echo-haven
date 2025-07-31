@@ -24,37 +24,37 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route 
-            path="/users" 
+          <Route
+            path="/users"
             element={
               <AdminLayout>
                 <Users />
               </AdminLayout>
-            } 
+            }
           />
-          <Route 
-            path="/groups" 
+          <Route
+            path="/groups"
             element={
               <AdminLayout>
                 <Groups />
               </AdminLayout>
-            } 
+            }
           />
-          <Route 
-            path="/events" 
+          <Route
+            path="/events"
             element={
               <AdminLayout>
                 <Events />
               </AdminLayout>
-            } 
+            }
           />
-          <Route 
-            path="/surveys" 
+          <Route
+            path="/surveys"
             element={
               <AdminLayout>
                 <Surveys />
               </AdminLayout>
-            } 
+            }
           />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

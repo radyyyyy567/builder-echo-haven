@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Edit, Trash2, MoreHorizontal, Filter, FileText, Calendar } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  Filter,
+  FileText,
+  Calendar,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +36,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { SurveyWithEvents, PaginatedResponse, ApiResponse, Survey } from "@shared/api";
+import {
+  SurveyWithEvents,
+  PaginatedResponse,
+  ApiResponse,
+  Survey,
+} from "@shared/api";
 import { SurveyForm } from "@/components/forms/SurveyForm";
 
 function getStatusBadgeColor(status: string) {
@@ -162,10 +176,12 @@ export default function Surveys() {
             Create and manage surveys with forms and analytics.
           </p>
         </div>
-        <Button onClick={() => {
-          setEditingSurvey(null);
-          setShowSurveyForm(true);
-        }}>
+        <Button
+          onClick={() => {
+            setEditingSurvey(null);
+            setShowSurveyForm(true);
+          }}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Survey
         </Button>
@@ -207,9 +223,7 @@ export default function Surveys() {
       {/* Surveys Table */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Surveys ({total})
-          </CardTitle>
+          <CardTitle>Surveys ({total})</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -249,19 +263,28 @@ export default function Surveys() {
                       </TableCell>
                       <TableCell>
                         <Badge className={getStatusBadgeColor(survey.status)}>
-                          {survey.status.charAt(0).toUpperCase() + survey.status.slice(1)}
+                          {survey.status.charAt(0).toUpperCase() +
+                            survey.status.slice(1)}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">{survey.events.length}</span>
-                          <span className="text-sm text-muted-foreground">events</span>
+                          <span className="text-sm font-medium">
+                            {survey.events.length}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            events
+                          </span>
                         </div>
                         {survey.events.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {survey.events.slice(0, 2).map((event) => (
-                              <Badge key={event.uuid} variant="outline" className="text-xs">
+                              <Badge
+                                key={event.uuid}
+                                variant="outline"
+                                className="text-xs"
+                              >
                                 {event.name}
                               </Badge>
                             ))}
@@ -294,11 +317,13 @@ export default function Surveys() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => editSurvey(survey)}>
+                            <DropdownMenuItem
+                              onClick={() => editSurvey(survey)}
+                            >
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => deleteSurvey(survey.uuid)}
                             >
@@ -323,7 +348,9 @@ export default function Surveys() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       Previous
@@ -331,7 +358,9 @@ export default function Surveys() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next

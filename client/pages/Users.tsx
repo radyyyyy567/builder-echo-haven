@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Edit, Trash2, MoreHorizontal, Filter } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  Filter,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,13 +35,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { UserWithGroups, PaginatedResponse, ApiResponse, User } from "@shared/api";
+import {
+  UserWithGroups,
+  PaginatedResponse,
+  ApiResponse,
+  User,
+} from "@shared/api";
 import { UserForm } from "@/components/forms/UserForm";
 
 function getUserInitials(username: string): string {
   return username
     .split(".")
-    .map(part => part.charAt(0).toUpperCase())
+    .map((part) => part.charAt(0).toUpperCase())
     .join("");
 }
 
@@ -168,10 +180,12 @@ export default function Users() {
             Manage user accounts, roles, and permissions.
           </p>
         </div>
-        <Button onClick={() => {
-          setEditingUser(null);
-          setShowUserForm(true);
-        }}>
+        <Button
+          onClick={() => {
+            setEditingUser(null);
+            setShowUserForm(true);
+          }}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add User
         </Button>
@@ -223,9 +237,7 @@ export default function Users() {
       {/* Users Table */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Users ({total})
-          </CardTitle>
+          <CardTitle>Users ({total})</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -283,7 +295,11 @@ export default function Users() {
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {user.groups.slice(0, 2).map((group) => (
-                            <Badge key={group.uuid} variant="outline" className="text-xs">
+                            <Badge
+                              key={group.uuid}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {group.name}
                             </Badge>
                           ))}
@@ -309,7 +325,7 @@ export default function Users() {
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => deleteUser(user.uuid)}
                             >
@@ -334,7 +350,9 @@ export default function Users() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       Previous
@@ -342,7 +360,9 @@ export default function Users() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next

@@ -31,22 +31,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Event, CreateEventRequest, UpdateEventRequest, ApiResponse } from "@shared/api";
+import {
+  Event,
+  CreateEventRequest,
+  UpdateEventRequest,
+  ApiResponse,
+} from "@shared/api";
 
-const eventSchema = z.object({
-  name: z.string().min(1, "Name is required").max(30, "Name must be 30 characters or less"),
-  description: z.string().optional(),
-  time_start: z.string().min(1, "Start time is required"),
-  time_end: z.string().min(1, "End time is required"),
-  status: z.enum(["scheduled", "active", "completed", "cancelled"]),
-}).refine((data) => {
-  const start = new Date(data.time_start);
-  const end = new Date(data.time_end);
-  return end > start;
-}, {
-  message: "End time must be after start time",
-  path: ["time_end"],
-});
+const eventSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Name is required")
+      .max(30, "Name must be 30 characters or less"),
+    description: z.string().optional(),
+    time_start: z.string().min(1, "Start time is required"),
+    time_end: z.string().min(1, "End time is required"),
+    status: z.enum(["scheduled", "active", "completed", "cancelled"]),
+  })
+  .refine(
+    (data) => {
+      const start = new Date(data.time_start);
+      const end = new Date(data.time_end);
+      return end > start;
+    },
+    {
+      message: "End time must be after start time",
+      path: ["time_end"],
+    },
+  );
 
 type EventFormData = z.infer<typeof eventSchema>;
 
@@ -61,14 +74,19 @@ function formatDateTimeLocal(dateString: string): string {
   const date = new Date(dateString);
   // Format for datetime-local input: YYYY-MM-DDTHH:MM
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormProps) {
+export function EventForm({
+  open,
+  onOpenChange,
+  event,
+  onSuccess,
+}: EventFormProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const isEdit = !!event;
@@ -99,7 +117,7 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
         // Default to 1 hour from now
         const now = new Date();
         const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-        
+
         form.reset({
           name: "",
           description: "",
@@ -130,7 +148,8 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
       if (isEdit) {
         const updatePayload: UpdateEventRequest = {};
         if (data.name !== event.name) updatePayload.name = data.name;
-        if (data.description !== (event.description || "")) updatePayload.description = data.description;
+        if (data.description !== (event.description || ""))
+          updatePayload.description = data.description;
         if (formatDateTimeLocal(event.time_start) !== data.time_start) {
           updatePayload.time_start = new Date(data.time_start).toISOString();
         }
@@ -138,7 +157,7 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
           updatePayload.time_end = new Date(data.time_end).toISOString();
         }
         if (data.status !== event.status) updatePayload.status = data.status;
-        
+
         const response = await fetch(url, {
           method,
           headers: {
@@ -207,7 +226,9 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Event" : "Create New Event"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Event" : "Create New Event"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Make changes to the event here."
@@ -238,10 +259,10 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Brief description of the event..."
                       className="resize-none"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -285,7 +306,10 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -313,7 +337,11 @@ export function EventForm({ open, onOpenChange, event, onSuccess }: EventFormPro
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : isEdit ? "Update Event" : "Create Event"}
+                {loading
+                  ? "Saving..."
+                  : isEdit
+                    ? "Update Event"
+                    : "Create Event"}
               </Button>
             </DialogFooter>
           </form>

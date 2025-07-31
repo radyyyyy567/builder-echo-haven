@@ -1,11 +1,11 @@
-import pool from './connection';
+import pool from "./connection";
 
 export async function createTables() {
   const client = await pool.connect();
-  
+
   try {
     // Begin transaction
-    await client.query('BEGIN');
+    await client.query("BEGIN");
 
     // Create users table
     await client.query(`
@@ -104,21 +104,34 @@ export async function createTables() {
     `);
 
     // Create indexes for better performance
-    await client.query('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);');
-    await client.query('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);');
-    await client.query('CREATE INDEX IF NOT EXISTS idx_groups_name ON groups(name);');
-    await client.query('CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);');
-    await client.query('CREATE INDEX IF NOT EXISTS idx_surveys_status ON surveys(status);');
-    await client.query('CREATE INDEX IF NOT EXISTS idx_relation_group_user_group ON relation_group_user(group_id);');
-    await client.query('CREATE INDEX IF NOT EXISTS idx_relation_group_user_user ON relation_group_user(user_id);');
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_groups_name ON groups(name);",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_surveys_status ON surveys(status);",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_relation_group_user_group ON relation_group_user(group_id);",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS idx_relation_group_user_user ON relation_group_user(user_id);",
+    );
 
     // Commit transaction
-    await client.query('COMMIT');
-    console.log('✅ Database tables created successfully');
-
+    await client.query("COMMIT");
+    console.log("✅ Database tables created successfully");
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ Failed to create tables:', error);
+    await client.query("ROLLBACK");
+    console.error("❌ Failed to create tables:", error);
     throw error;
   } finally {
     client.release();
@@ -127,57 +140,66 @@ export async function createTables() {
 
 export async function seedDatabase() {
   const client = await pool.connect();
-  
+
   try {
     // Check if users already exist
-    const userCount = await client.query('SELECT COUNT(*) FROM users');
+    const userCount = await client.query("SELECT COUNT(*) FROM users");
     if (parseInt(userCount.rows[0].count) > 0) {
-      console.log('ℹ️ Database already has data, skipping seed');
+      console.log("ℹ️ Database already has data, skipping seed");
       return;
     }
 
-    await client.query('BEGIN');
+    await client.query("BEGIN");
 
     // Insert sample users
     const users = [
-      ['john.doe', 'john.doe@example.com', 'admin', '$2b$10$example.hash'],
-      ['jane.smith', 'jane.smith@example.com', 'user', '$2b$10$example.hash'],
-      ['mike.johnson', 'mike.johnson@example.com', 'moderator', '$2b$10$example.hash'],
-      ['sarah.wilson', 'sarah.wilson@example.com', 'user', '$2b$10$example.hash'],
-      ['david.brown', 'david.brown@example.com', 'user', '$2b$10$example.hash'],
+      ["john.doe", "john.doe@example.com", "admin", "$2b$10$example.hash"],
+      ["jane.smith", "jane.smith@example.com", "user", "$2b$10$example.hash"],
+      [
+        "mike.johnson",
+        "mike.johnson@example.com",
+        "moderator",
+        "$2b$10$example.hash",
+      ],
+      [
+        "sarah.wilson",
+        "sarah.wilson@example.com",
+        "user",
+        "$2b$10$example.hash",
+      ],
+      ["david.brown", "david.brown@example.com", "user", "$2b$10$example.hash"],
     ];
 
     for (const [username, email, role, password] of users) {
       await client.query(
-        'INSERT INTO users (username, email, role, password) VALUES ($1, $2, $3, $4)',
-        [username, email, role, password]
+        "INSERT INTO users (username, email, role, password) VALUES ($1, $2, $3, $4)",
+        [username, email, role, password],
       );
     }
 
     // Insert sample groups
     const groups = [
-      ['Engineering', 'Software development team'],
-      ['Marketing', 'Marketing and growth team'],
-      ['Support', 'Customer support team'],
-      ['QA', 'Quality assurance team'],
-      ['Design', 'UI/UX design team'],
-      ['DevOps', 'DevOps and infrastructure team'],
-      ['Management', 'Management and leadership'],
+      ["Engineering", "Software development team"],
+      ["Marketing", "Marketing and growth team"],
+      ["Support", "Customer support team"],
+      ["QA", "Quality assurance team"],
+      ["Design", "UI/UX design team"],
+      ["DevOps", "DevOps and infrastructure team"],
+      ["Management", "Management and leadership"],
     ];
 
     for (const [name, description] of groups) {
       await client.query(
-        'INSERT INTO groups (name, description) VALUES ($1, $2)',
-        [name, description]
+        "INSERT INTO groups (name, description) VALUES ($1, $2)",
+        [name, description],
       );
     }
 
-    await client.query('COMMIT');
-    console.log('✅ Database seeded successfully');
-
+    await client.query("COMMIT");
+    console.log("✅ Database seeded successfully");
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ Failed to seed database:', error);
+    await client.query("ROLLBACK");
+    console.error("❌ Failed to seed database:", error);
     throw error;
   } finally {
     client.release();

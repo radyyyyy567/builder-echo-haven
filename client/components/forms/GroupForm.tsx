@@ -23,10 +23,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Group, CreateGroupRequest, UpdateGroupRequest, ApiResponse } from "@shared/api";
+import {
+  Group,
+  CreateGroupRequest,
+  UpdateGroupRequest,
+  ApiResponse,
+} from "@shared/api";
 
 const groupSchema = z.object({
-  name: z.string().min(1, "Name is required").max(30, "Name must be 30 characters or less"),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(30, "Name must be 30 characters or less"),
   description: z.string().optional(),
 });
 
@@ -39,7 +47,12 @@ interface GroupFormProps {
   onSuccess: () => void;
 }
 
-export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormProps) {
+export function GroupForm({
+  open,
+  onOpenChange,
+  group,
+  onSuccess,
+}: GroupFormProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const isEdit = !!group;
@@ -77,11 +90,12 @@ export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormPro
 
       // For edit, only include changed fields
       let payload: CreateGroupRequest | UpdateGroupRequest;
-      
+
       if (isEdit) {
         payload = {};
         if (data.name !== group.name) payload.name = data.name;
-        if (data.description !== (group.description || "")) payload.description = data.description;
+        if (data.description !== (group.description || ""))
+          payload.description = data.description;
       } else {
         payload = {
           name: data.name,
@@ -102,7 +116,9 @@ export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormPro
       if (result.success) {
         toast({
           title: "Success",
-          description: result.message || `Group ${isEdit ? "updated" : "created"} successfully`,
+          description:
+            result.message ||
+            `Group ${isEdit ? "updated" : "created"} successfully`,
         });
         onSuccess();
         onOpenChange(false);
@@ -110,7 +126,8 @@ export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormPro
       } else {
         toast({
           title: "Error",
-          description: result.error || `Failed to ${isEdit ? "update" : "create"} group`,
+          description:
+            result.error || `Failed to ${isEdit ? "update" : "create"} group`,
           variant: "destructive",
         });
       }
@@ -130,7 +147,9 @@ export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Group" : "Create New Group"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Group" : "Create New Group"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Make changes to the group here."
@@ -161,10 +180,10 @@ export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormPro
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Brief description of the group..."
                       className="resize-none"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -182,7 +201,11 @@ export function GroupForm({ open, onOpenChange, group, onSuccess }: GroupFormPro
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : isEdit ? "Update Group" : "Create Group"}
+                {loading
+                  ? "Saving..."
+                  : isEdit
+                    ? "Update Group"
+                    : "Create Group"}
               </Button>
             </DialogFooter>
           </form>

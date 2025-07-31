@@ -12,7 +12,7 @@ import {
   updateUser,
   deleteUser,
   addUserToGroup,
-  removeUserFromGroup
+  removeUserFromGroup,
 } from "./routes/users";
 
 import {
@@ -20,13 +20,10 @@ import {
   getGroupById,
   createGroup,
   updateGroup,
-  deleteGroup
+  deleteGroup,
 } from "./routes/groups";
 
-import {
-  getDashboardStats,
-  getRecentActivity
-} from "./routes/dashboard";
+import { getDashboardStats, getRecentActivity } from "./routes/dashboard";
 
 import {
   getEvents,
@@ -35,7 +32,7 @@ import {
   updateEvent,
   deleteEvent,
   addEventToGroup,
-  removeEventFromGroup
+  removeEventFromGroup,
 } from "./routes/events";
 
 import {
@@ -45,7 +42,7 @@ import {
   updateSurvey,
   deleteSurvey,
   addSurveyToEvent,
-  removeSurveyFromEvent
+  removeSurveyFromEvent,
 } from "./routes/surveys";
 
 export function createServer() {
@@ -109,24 +106,26 @@ export function createServer() {
 }
 
 async function initializeDatabase() {
-  console.log('🔄 Initializing database...');
-  
+  console.log("🔄 Initializing database...");
+
   // Test connection
   const connected = await testConnection();
   if (!connected) {
-    console.error('❌ Database connection failed. Please check your connection settings.');
+    console.error(
+      "❌ Database connection failed. Please check your connection settings.",
+    );
     return;
   }
 
   try {
     // Create tables
     await createTables();
-    
+
     // Seed with initial data
     await seedDatabase();
-    
-    console.log('✅ Database initialization completed successfully');
+
+    console.log("✅ Database initialization completed successfully");
   } catch (error) {
-    console.error('❌ Database initialization failed:', error);
+    console.error("❌ Database initialization failed:", error);
   }
 }

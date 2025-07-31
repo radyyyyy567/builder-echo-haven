@@ -30,13 +30,27 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { User, CreateUserRequest, UpdateUserRequest, ApiResponse } from "@shared/api";
+import {
+  User,
+  CreateUserRequest,
+  UpdateUserRequest,
+  ApiResponse,
+} from "@shared/api";
 
 const userSchema = z.object({
-  username: z.string().min(1, "Username is required").max(30, "Username must be 30 characters or less"),
-  email: z.string().email("Invalid email address").max(100, "Email must be 100 characters or less"),
+  username: z
+    .string()
+    .min(1, "Username is required")
+    .max(30, "Username must be 30 characters or less"),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .max(100, "Email must be 100 characters or less"),
   role: z.enum(["admin", "moderator", "user"]),
-  password: z.string().min(6, "Password must be at least 6 characters").optional(),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .optional(),
   status: z.boolean(),
 });
 
@@ -49,7 +63,12 @@ interface UserFormProps {
   onSuccess: () => void;
 }
 
-export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps) {
+export function UserForm({
+  open,
+  onOpenChange,
+  user,
+  onSuccess,
+}: UserFormProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const isEdit = !!user;
@@ -96,7 +115,7 @@ export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps)
 
       // For edit, only include changed fields (except password if empty)
       let payload: CreateUserRequest | UpdateUserRequest;
-      
+
       if (isEdit) {
         payload = {};
         if (data.username !== user.username) payload.username = data.username;
@@ -129,7 +148,9 @@ export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps)
       if (result.success) {
         toast({
           title: "Success",
-          description: result.message || `User ${isEdit ? "updated" : "created"} successfully`,
+          description:
+            result.message ||
+            `User ${isEdit ? "updated" : "created"} successfully`,
         });
         onSuccess();
         onOpenChange(false);
@@ -137,7 +158,8 @@ export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps)
       } else {
         toast({
           title: "Error",
-          description: result.error || `Failed to ${isEdit ? "update" : "create"} user`,
+          description:
+            result.error || `Failed to ${isEdit ? "update" : "create"} user`,
           variant: "destructive",
         });
       }
@@ -188,7 +210,11 @@ export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps)
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="john.doe@example.com" type="email" {...field} />
+                    <Input
+                      placeholder="john.doe@example.com"
+                      type="email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -201,7 +227,10 @@ export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps)
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a role" />
@@ -227,10 +256,14 @@ export function UserForm({ open, onOpenChange, user, onSuccess }: UserFormProps)
                     Password {isEdit && "(leave empty to keep current)"}
                   </FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={isEdit ? "Leave empty to keep current" : "Enter password"} 
-                      type="password" 
-                      {...field} 
+                    <Input
+                      placeholder={
+                        isEdit
+                          ? "Leave empty to keep current"
+                          : "Enter password"
+                      }
+                      type="password"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

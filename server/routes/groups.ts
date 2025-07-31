@@ -1,12 +1,12 @@
 import { RequestHandler } from "express";
 import pool from "../db/connection";
-import { 
-  Group, 
-  GroupWithUsers, 
-  CreateGroupRequest, 
-  UpdateGroupRequest, 
-  ApiResponse, 
-  PaginatedResponse 
+import {
+  Group,
+  GroupWithUsers,
+  CreateGroupRequest,
+  UpdateGroupRequest,
+  ApiResponse,
+  PaginatedResponse,
 } from "@shared/api";
 
 // Get all groups with optional filtering and pagination
@@ -15,7 +15,7 @@ export const getGroups: RequestHandler = async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = (page - 1) * limit;
-    const search = req.query.search as string || '';
+    const search = (req.query.search as string) || "";
 
     let query = `
       SELECT g.*, 
@@ -65,8 +65,11 @@ export const getGroups: RequestHandler = async (req, res) => {
     }
 
     const [groupsResult, countResult] = await Promise.all([
-      pool.query(query + ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`, [...params, limit, offset]),
-      pool.query(countQuery, countParams)
+      pool.query(
+        query + ` LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`,
+        [...params, limit, offset],
+      ),
+      pool.query(countQuery, countParams),
     ]);
 
     const total = parseInt(countResult.rows[0].total);
@@ -79,16 +82,16 @@ export const getGroups: RequestHandler = async (req, res) => {
         page,
         limit,
         total,
-        totalPages
-      }
+        totalPages,
+      },
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching groups:', error);
+    console.error("Error fetching groups:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch groups'
+      error: "Failed to fetch groups",
     };
     res.status(500).json(response);
   }
@@ -125,22 +128,22 @@ export const getGroupById: RequestHandler = async (req, res) => {
     if (result.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Group not found'
+        error: "Group not found",
       };
       return res.status(404).json(response);
     }
 
     const response: ApiResponse<GroupWithUsers> = {
       success: true,
-      data: result.rows[0]
+      data: result.rows[0],
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching group:', error);
+    console.error("Error fetching group:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to fetch group'
+      error: "Failed to fetch group",
     };
     res.status(500).json(response);
   }
@@ -155,7 +158,7 @@ export const createGroup: RequestHandler = async (req, res) => {
     if (!name) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Group name is required'
+        error: "Group name is required",
       };
       return res.status(400).json(response);
     }
@@ -171,21 +174,22 @@ export const createGroup: RequestHandler = async (req, res) => {
     const response: ApiResponse<Group> = {
       success: true,
       data: result.rows[0],
-      message: 'Group created successfully'
+      message: "Group created successfully",
     };
 
     res.status(201).json(response);
   } catch (error: any) {
-    console.error('Error creating group:', error);
-    
-    let errorMessage = 'Failed to create group';
-    if (error.code === '23505') { // Unique constraint violation
-      errorMessage = 'Group name already exists';
+    console.error("Error creating group:", error);
+
+    let errorMessage = "Failed to create group";
+    if (error.code === "23505") {
+      // Unique constraint violation
+      errorMessage = "Group name already exists";
     }
 
     const response: ApiResponse<null> = {
       success: false,
-      error: errorMessage
+      error: errorMessage,
     };
     res.status(400).json(response);
   }
@@ -213,7 +217,7 @@ export const updateGroup: RequestHandler = async (req, res) => {
     if (updateFields.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'No fields to update'
+        error: "No fields to update",
       };
       return res.status(400).json(response);
     }
@@ -221,7 +225,7 @@ export const updateGroup: RequestHandler = async (req, res) => {
     values.push(id); // Add ID as last parameter
     const query = `
       UPDATE groups 
-      SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+      SET ${updateFields.join(", ")}, updated_at = CURRENT_TIMESTAMP
       WHERE uuid = $${paramCount + 1}
       RETURNING uuid, name, description, created_at, updated_at
     `;
@@ -231,7 +235,7 @@ export const updateGroup: RequestHandler = async (req, res) => {
     if (result.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Group not found'
+        error: "Group not found",
       };
       return res.status(404).json(response);
     }
@@ -239,21 +243,22 @@ export const updateGroup: RequestHandler = async (req, res) => {
     const response: ApiResponse<Group> = {
       success: true,
       data: result.rows[0],
-      message: 'Group updated successfully'
+      message: "Group updated successfully",
     };
 
     res.json(response);
   } catch (error: any) {
-    console.error('Error updating group:', error);
-    
-    let errorMessage = 'Failed to update group';
-    if (error.code === '23505') { // Unique constraint violation
-      errorMessage = 'Group name already exists';
+    console.error("Error updating group:", error);
+
+    let errorMessage = "Failed to update group";
+    if (error.code === "23505") {
+      // Unique constraint violation
+      errorMessage = "Group name already exists";
     }
 
     const response: ApiResponse<null> = {
       success: false,
-      error: errorMessage
+      error: errorMessage,
     };
     res.status(400).json(response);
   }
@@ -265,30 +270,33 @@ export const deleteGroup: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     // First check if group exists
-    const checkResult = await pool.query('SELECT uuid FROM groups WHERE uuid = $1', [id]);
-    
+    const checkResult = await pool.query(
+      "SELECT uuid FROM groups WHERE uuid = $1",
+      [id],
+    );
+
     if (checkResult.rows.length === 0) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Group not found'
+        error: "Group not found",
       };
       return res.status(404).json(response);
     }
 
     // Delete group (cascading will handle relationships)
-    await pool.query('DELETE FROM groups WHERE uuid = $1', [id]);
+    await pool.query("DELETE FROM groups WHERE uuid = $1", [id]);
 
     const response: ApiResponse<null> = {
       success: true,
-      message: 'Group deleted successfully'
+      message: "Group deleted successfully",
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error deleting group:', error);
+    console.error("Error deleting group:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Failed to delete group'
+      error: "Failed to delete group",
     };
     res.status(500).json(response);
   }

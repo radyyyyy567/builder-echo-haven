@@ -30,10 +30,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Survey, CreateSurveyRequest, UpdateSurveyRequest, ApiResponse } from "@shared/api";
+import {
+  Survey,
+  CreateSurveyRequest,
+  UpdateSurveyRequest,
+  ApiResponse,
+} from "@shared/api";
 
 const surveySchema = z.object({
-  name: z.string().min(1, "Name is required").max(30, "Name must be 30 characters or less"),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(30, "Name must be 30 characters or less"),
   form_json: z.string().min(1, "Form structure is required"),
   set_point: z.string().optional(),
   status: z.enum(["active", "inactive", "completed"]),
@@ -48,33 +56,48 @@ interface SurveyFormProps {
   onSuccess: () => void;
 }
 
-const defaultFormStructure = JSON.stringify({
-  title: "Sample Survey",
-  description: "Please fill out this survey",
-  fields: [
-    {
-      id: "field1",
-      type: "text",
-      label: "Full Name",
-      required: true
-    },
-    {
-      id: "field2",
-      type: "email",
-      label: "Email Address",
-      required: true
-    },
-    {
-      id: "field3",
-      type: "select",
-      label: "How satisfied are you?",
-      required: true,
-      options: ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"]
-    }
-  ]
-}, null, 2);
+const defaultFormStructure = JSON.stringify(
+  {
+    title: "Sample Survey",
+    description: "Please fill out this survey",
+    fields: [
+      {
+        id: "field1",
+        type: "text",
+        label: "Full Name",
+        required: true,
+      },
+      {
+        id: "field2",
+        type: "email",
+        label: "Email Address",
+        required: true,
+      },
+      {
+        id: "field3",
+        type: "select",
+        label: "How satisfied are you?",
+        required: true,
+        options: [
+          "Very Satisfied",
+          "Satisfied",
+          "Neutral",
+          "Dissatisfied",
+          "Very Dissatisfied",
+        ],
+      },
+    ],
+  },
+  null,
+  2,
+);
 
-export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyFormProps) {
+export function SurveyForm({
+  open,
+  onOpenChange,
+  survey,
+  onSuccess,
+}: SurveyFormProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const isEdit = !!survey;
@@ -132,12 +155,14 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
 
       // For edit, only include changed fields
       let payload: CreateSurveyRequest | UpdateSurveyRequest;
-      
+
       if (isEdit) {
         payload = {};
         if (data.name !== survey.name) payload.name = data.name;
-        if (JSON.stringify(formObject) !== JSON.stringify(survey.form)) payload.form = formObject;
-        if (data.set_point !== (survey.set_point || "")) payload.set_point = data.set_point;
+        if (JSON.stringify(formObject) !== JSON.stringify(survey.form))
+          payload.form = formObject;
+        if (data.set_point !== (survey.set_point || ""))
+          payload.set_point = data.set_point;
         if (data.status !== survey.status) payload.status = data.status;
       } else {
         payload = {
@@ -161,7 +186,9 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
       if (result.success) {
         toast({
           title: "Success",
-          description: result.message || `Survey ${isEdit ? "updated" : "created"} successfully`,
+          description:
+            result.message ||
+            `Survey ${isEdit ? "updated" : "created"} successfully`,
         });
         onSuccess();
         onOpenChange(false);
@@ -169,7 +196,8 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
       } else {
         toast({
           title: "Error",
-          description: result.error || `Failed to ${isEdit ? "update" : "create"} survey`,
+          description:
+            result.error || `Failed to ${isEdit ? "update" : "create"} survey`,
           variant: "destructive",
         });
       }
@@ -189,7 +217,9 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Survey" : "Create New Survey"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Survey" : "Create New Survey"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Make changes to the survey here."
@@ -206,7 +236,10 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
                 <FormItem>
                   <FormLabel>Survey Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Customer Satisfaction Survey" {...field} />
+                    <Input
+                      placeholder="Customer Satisfaction Survey"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -219,7 +252,10 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -243,10 +279,10 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
                 <FormItem>
                   <FormLabel>Set Point (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Additional notes or instructions for the survey..."
                       className="resize-none"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -261,15 +297,17 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
                 <FormItem>
                   <FormLabel>Form Structure (JSON)</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Textarea
                       placeholder="Enter the form structure in JSON format..."
                       className="resize-none font-mono text-sm h-48"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
                   <div className="text-xs text-muted-foreground">
-                    Define your survey fields using JSON. Include title, description, and fields array with id, type, label, and required properties.
+                    Define your survey fields using JSON. Include title,
+                    description, and fields array with id, type, label, and
+                    required properties.
                   </div>
                 </FormItem>
               )}
@@ -285,7 +323,11 @@ export function SurveyForm({ open, onOpenChange, survey, onSuccess }: SurveyForm
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : isEdit ? "Update Survey" : "Create Survey"}
+                {loading
+                  ? "Saving..."
+                  : isEdit
+                    ? "Update Survey"
+                    : "Create Survey"}
               </Button>
             </DialogFooter>
           </form>
