@@ -168,7 +168,10 @@ export default function Users() {
             Manage user accounts, roles, and permissions.
           </p>
         </div>
-        <Button>
+        <Button onClick={() => {
+          setEditingUser(null);
+          setShowUserForm(true);
+        }}>
           <Plus className="h-4 w-4 mr-2" />
           Add User
         </Button>
