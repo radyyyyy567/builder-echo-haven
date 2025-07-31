@@ -354,6 +354,17 @@ export default function Users() {
           )}
         </CardContent>
       </Card>
+
+      {/* User Form Dialog */}
+      <UserForm
+        open={showUserForm}
+        onOpenChange={(open) => {
+          setShowUserForm(open);
+          if (!open) setEditingUser(null);
+        }}
+        user={editingUser}
+        onSuccess={fetchUsers}
+      />
     </div>
   );
 }
